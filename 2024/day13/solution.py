@@ -73,55 +73,11 @@ def part2():
         px += adjustment
         py += adjustment
 
-        @lru_cache(maxsize=None)
-        def followPath(path, ax, ay, bx, by, px, py):
-            cost = 0
-            x = y = 0
+        aPresses = (px * by - py * bx) / (ax * by - ay * bx)
+        bPresses = (px - ax * aPresses) / bx
 
-            while path > 1:
-                if path & 1 == 1:
-                    x += ax
-                    y += ay
-                    cost += aPrice
-                else:
-                    x += bx
-                    y += by
-                    cost += bPrice
-
-                path >>= 1
-
-            overshotTarget = x > px or y > py
-            hitTarget = x == px and y == px
-
-            return overshotTarget, hitTarget, cost
-
-
-        minCost = float("inf")
-        queue = deque([1])
-
-        print(game)
-
-        while queue:
-            curr = queue.popleft()
-
-            aPath = (curr << 1) | 1
-            aOvershot, aHit, aCost = followPath(aPath, ax, ay, bx, by, px, py)
-
-            if aHit:
-                minCost = min(aCost, minCost)
-            elif not aOvershot:
-                queue.append(aPath)
-
-            bPath = (curr << 1)
-            bOvershot, bHit, bCost = followPath(bPath, ax, ay, bx, by, px, py)
-
-            if bHit:
-                minCost = min(bCost, minCost)
-            elif not bOvershot:
-                queue.append(bPath)
-
-        if minCost != float("inf"):
-            total += minCost
+        if aPresses % 1 == 0 and bPresses % 1 == 0:
+            total += aPresses * aPrice + bPresses * bPrice
 
     print(total)
 
